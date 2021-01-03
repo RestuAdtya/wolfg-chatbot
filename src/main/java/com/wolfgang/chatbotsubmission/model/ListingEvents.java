@@ -1,6 +1,5 @@
 package com.wolfgang.chatbotsubmission.model;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -13,7 +12,7 @@ import java.util.List;
         "data"
 })
 
-public class DicodingEvents {
+public class ListingEvents {
     @JsonProperty("success")
     private boolean success;
     @JsonProperty("data")

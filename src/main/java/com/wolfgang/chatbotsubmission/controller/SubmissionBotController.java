@@ -20,7 +20,7 @@ import com.linecorp.bot.model.message.flex.container.FlexContainer;
 import com.linecorp.bot.model.objectmapper.ModelObjectMapper;
 import com.linecorp.bot.model.profile.UserProfileResponse;
 import com.wolfgang.chatbotsubmission.model.Datum;
-import com.wolfgang.chatbotsubmission.model.DicodingEvents;
+import com.wolfgang.chatbotsubmission.model.ListingEvents;
 import com.wolfgang.chatbotsubmission.model.JointEvents;
 import com.wolfgang.chatbotsubmission.model.LineEventsModel;
 import com.wolfgang.chatbotsubmission.service.BotService;
@@ -66,7 +66,7 @@ public class SubmissionBotController {
     private DBService dbService;
 
     private UserProfileResponse sender = null;
-    private DicodingEvents dicodingEvents = null;
+    private ListingEvents listingEvents = null;
 
     @RequestMapping(value="/webhook", method= RequestMethod.POST)
     public ResponseEntity<String> callback(
@@ -74,10 +74,9 @@ public class SubmissionBotController {
             @RequestBody String eventsPayload)
     {
         try {
-            // validasi line signature. matikan validasi ini jika masih dalam pengembangan
-//            if (!lineSignatureValidator.validateSignature(eventsPayload.getBytes(), xLineSignature)) {
-//                throw new RuntimeException("Invalid Signature Validation");
-//            }
+            if (!lineSignatureValidator.validateSignature(eventsPayload.getBytes(), xLineSignature)) {
+                throw new RuntimeException("Invalid Signature Validation");
+            }
 
             System.out.println(eventsPayload);
             ObjectMapper objectMapper = ModelObjectMapper.createNewObjectMapper();
@@ -150,7 +149,7 @@ public class SubmissionBotController {
         String msgText = textMessage.toLowerCase();
         if (msgText.contains("bot leave")) {
             if (sender == null) {
-                botService.replyText(replyToken, "Hi, tambahkan dulu bot Dicoding Event sebagai teman!");
+                botService.replyText(replyToken, "Hi, silahkan tambahkan Wolfg Chatbot terlebih dahulu!");
             } else {
                 botService.leaveGroup(groupId);
             }
@@ -160,7 +159,7 @@ public class SubmissionBotController {
                 || msgText.contains("teman")
         ) {
             processText(replyToken, textMessage);
-        } else if (msgText.contains("lihat daftar event")) {
+        } else if (msgText.contains("cek event")) {
             showCarouselEvents(replyToken);
         } else if (msgText.contains("summary")) {
             showEventSummary(replyToken, textMessage);
@@ -173,7 +172,7 @@ public class SubmissionBotController {
         String msgText = textMessage.toLowerCase();
         if (msgText.contains("bot leave")) {
             if (sender == null) {
-                botService.replyText(replyToken, "Hi, tambahkan dulu bot Dicoding Event sebagai teman!");
+                botService.replyText(replyToken, "Hi, silahkan tambahkan Wolfg Chatbot terlebih dahulu!");
             } else {
                 botService.leaveRoom(roomId);
             }
@@ -183,7 +182,7 @@ public class SubmissionBotController {
                 || msgText.contains("teman")
         ) {
             processText(replyToken, msgText);
-        } else if (msgText.contains("lihat daftar event")) {
+        } else if (msgText.contains("cek event")) {
             showCarouselEvents(replyToken);
         } else if (msgText.contains("summary")) {
             showEventSummary(replyToken, textMessage);
@@ -200,7 +199,7 @@ public class SubmissionBotController {
                 || msgText.contains("teman")
         ) {
             processText(replyToken, msgText);
-        } else if (msgText.contains("lihat daftar event")) {
+        } else if (msgText.contains("cek event")) {
             showCarouselEvents(replyToken);
         } else if (msgText.contains("summary")) {
             showEventSummary(replyToken, textMessage);
@@ -210,7 +209,7 @@ public class SubmissionBotController {
     }
 
     private void handleFallbackMessage(String replyToken, Source source) {
-        greetingMessage(replyToken, source, "Hi " + sender.getDisplayName() + ", aku belum  mengerti maksud kamu. Silahkan ikuti petunjuk ya :)");
+        greetingMessage(replyToken, source, "Heyho " + sender.getDisplayName() + ", pencarianmu tidak dapat ditemukan. Silahkan ikuti petunjuk ya ");
     }
 
     private void processText(String replyToken, String messageText) {
@@ -220,7 +219,7 @@ public class SubmissionBotController {
         if(intent.equalsIgnoreCase("id")) {
             handleRegisteringUser(replyToken, words);
         } else if (intent.equalsIgnoreCase("join")) {
-            handleJoinDicodingEvent(replyToken, words);
+            handleJoinWolfgEvent(replyToken, words);
         } else if (intent.equalsIgnoreCase("teman")) {
             handleShowFriend(replyToken, words);
         }
@@ -231,26 +230,26 @@ public class SubmissionBotController {
         String target=words.length > 1 ? words[1] : "";
 
         if (target.length()<=3){
-            registerMessage = "Need more than 3 character to find user";
+            registerMessage = "Dibutuhkan lebih dari 3 karakter untuk mencari user tersebut";
         } else {
             String lineId = target.substring(target.indexOf("@") + 1);
             if(sender != null) {
                 if (!sender.getDisplayName().isEmpty() && (lineId.length() > 0)) {
                     if (dbService.regLineID(sender.getUserId(), lineId, sender.getDisplayName()) != 0) {
-                        showCarouselEvents(replyToken, "Pendaftaran user berhasil. Berikut daftar event yang bisa kamu ikuti:");
+                        showCarouselEvents(replyToken, "Yoo kamu berhasil terdaftar di Wolfg Project. Silahkan cek daftar event yang tersedia, semoga ada yg menarik minatmu "+sender.getDisplayName()+" :");
                     } else {
-                        userNotFoundFallback(replyToken, "Gagal melakukan pendaftaran user! Ikuti petunjuk berikut ini:");
+                        userNotFoundFallback(replyToken, "Upss maaf proses pendaftaranmu tidak berhasil! Ayo ikuti petunjuk berikut ini:");
                     }
                 } else {
-                    userNotFoundFallback(replyToken, "User tidak terdeteksi. Tambahkan dulu bot Dicoding Event sebagai teman!");
+                    userNotFoundFallback(replyToken, "Datamu tidak dapat ditemukan. Silahkan tambahkan Wolfg Chatbot terlebih dahulu!");
                 }
             } else {
-                userNotFoundFallback(replyToken, "Hi, tambahkan dulu bot Dicoding Event sebagai teman!");
+                userNotFoundFallback(replyToken, "Hi, silahkan tambahkan Wolfg Chatbot terlebih dahulu!");
             }
         }
     }
 
-    private void handleJoinDicodingEvent(String replyToken, String[] words) {
+    private void handleJoinWolfgEvent(String replyToken, String[] words) {
         String target       = words.length > 2 ? words[2] : "";
         String eventId      = target.substring(target.indexOf("#") + 1);
         String senderId     = sender.getUserId();
@@ -261,7 +260,7 @@ public class SubmissionBotController {
 
         if (joinStatus == -1) {
             TemplateMessage buttonsTemplate = botTemplate.createButton(
-                    "Kamu sudah bergabung di event ini",
+                    "Heyho, "+senderName+" sepertinya kamu sudah tergabung di event ini",
                     "Lihat Teman",
                     "teman #" + eventId
             );
@@ -271,7 +270,7 @@ public class SubmissionBotController {
 
         if (joinStatus == 1) {
             TemplateMessage buttonsTemplate = botTemplate.createButton(
-                    "Pendaftaran event berhasil! Berikut teman yang menemani kamu",
+                    "Yoo kamu berhasil mendaftar di event ini! Mari cek peserta lain, mungkin ada yang kamu kenal",
                     "Lihat Teman",
                     "teman #" + eventId
             );
@@ -280,7 +279,7 @@ public class SubmissionBotController {
             return;
         }
 
-        botService.replyText(replyToken, "yah, kamu gagal bergabung event :(");
+        botService.replyText(replyToken, "yah, kamu gagal bergabung event");
     }
 
     private void handleShowFriend(String replyToken, String[] words) {
@@ -315,8 +314,8 @@ public class SubmissionBotController {
         List<String> messages = new ArrayList<String>();
 
         if(additionalInfo != null) messages.add(additionalInfo);
-        messages.add("Aku akan mencarikan event aktif di dicoding! Tapi, kasih tahu dulu LINE ID kamu (pake \'id @\' ya)");
-        messages.add("Contoh: id @dicoding");
+        messages.add("Nah sebelum mencari lebih lanjut, beritahukan ID-mu agar temanmu yg lain tau jika kamu bergabung disini (pake \'id @\' ya)");
+        messages.add("Contoh: id @wolfg");
 
         botService.replyText(replyToken, messages.toArray(new String[messages.size()]));
         return;
@@ -333,11 +332,11 @@ public class SubmissionBotController {
             userNotFoundFallback(replyToken);
         }
 
-        if((dicodingEvents == null) || (dicodingEvents.getData().size() < 1)){
-            getDicodingEventsData();
+        if((listingEvents == null) || (listingEvents.getData().size() < 1)){
+            getListingEventsData();
         }
 
-        TemplateMessage carouselEvents = botTemplate.carouselEvents(dicodingEvents);
+        TemplateMessage carouselEvents = botTemplate.carouselEvents(listingEvents);
 
         if (additionalInfo == null) {
             botService.reply(replyToken, carouselEvents);
@@ -350,7 +349,7 @@ public class SubmissionBotController {
         botService.reply(replyToken, messageList);
     }
 
-    private void getDicodingEventsData() {
+    private void getListingEventsData() {
         // Act as client with GET method
         String URI = "https://www.dicoding.com/public/api/events?limit=10&active=-1";
         System.out.println("URI: " +  URI);
@@ -374,7 +373,7 @@ public class SubmissionBotController {
             System.out.println(jsonResponse);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            dicodingEvents = objectMapper.readValue(jsonResponse, DicodingEvents.class);
+            listingEvents = objectMapper.readValue(jsonResponse, ListingEvents.class);
         } catch (InterruptedException | ExecutionException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -390,19 +389,19 @@ public class SubmissionBotController {
                 .collect(Collectors.toList());
 
         Set<String> stringSet = new HashSet<String>(listIds);
-        String msg = "Hi, ada teman baru telah bergabung di event " + eventId;
+        String msg = "Fren, ada teman baru telah bergabung di event " + eventId+", ayo cek. Siapa tau kalian saling kenal";
         TemplateMessage buttonsTemplate = botTemplate.createButton(msg, "Lihat Teman", "teman #" + eventId);
         botService.multicast(stringSet, buttonsTemplate);
     }
 
     private void showEventSummary(String replyToken, String userTxt) {
         try {
-            if (dicodingEvents == null) {
-                getDicodingEventsData();
+            if (listingEvents == null) {
+                getListingEventsData();
             }
 
             int eventIndex = Integer.parseInt(String.valueOf(userTxt.charAt(1))) - 1;
-            Datum eventData = dicodingEvents.getData().get(eventIndex);
+            Datum eventData = listingEvents.getData().get(eventIndex);
 
             ClassLoader classLoader = getClass().getClassLoader();
             String encoding         = StandardCharsets.UTF_8.name();
@@ -424,7 +423,7 @@ public class SubmissionBotController {
 
             ObjectMapper objectMapper = ModelObjectMapper.createNewObjectMapper();
             FlexContainer flexContainer = objectMapper.readValue(flexTemplate, FlexContainer.class);
-            botService.reply(replyToken, new FlexMessage("Dicoding Academy", flexContainer));
+            botService.reply(replyToken, new FlexMessage("Wolfg Project", flexContainer));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

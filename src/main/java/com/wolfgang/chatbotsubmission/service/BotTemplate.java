@@ -11,7 +11,7 @@ import com.linecorp.bot.model.message.template.ButtonsTemplate;
 import com.linecorp.bot.model.message.template.CarouselColumn;
 import com.linecorp.bot.model.message.template.CarouselTemplate;
 import com.linecorp.bot.model.profile.UserProfileResponse;
-import com.wolfgang.chatbotsubmission.model.DicodingEvents;
+import com.wolfgang.chatbotsubmission.model.ListingEvents;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,8 +37,8 @@ public class BotTemplate {
     }
 
     public TemplateMessage greetingMessage(Source source, UserProfileResponse sender) {
-        String message  = "Hi %s! Ayo ikut dicoding event, aku bisa cariin kamu teman.";
-        String action   = "Lihat daftar event";
+        String message  = "Heyho %s! Selamat datang di Wolfg Project. Silahkan gunakan cari yg anda butuhkan !";
+        String action   = "Cek event";
 
         if (source instanceof GroupSource) {
             message = String.format(message, "Group");
@@ -53,17 +53,17 @@ public class BotTemplate {
         return createButton(message, action, action);
     }
 
-    public TemplateMessage carouselEvents(DicodingEvents dicodingEvents) {
+    public TemplateMessage carouselEvents(ListingEvents listingEvents) {
         int i;
         String image, owner, name, id, link;
         CarouselColumn column;
         List<CarouselColumn> carouselColumn = new ArrayList<>();
-        for (i = 0; i < dicodingEvents.getData().size(); i++){
-            image = dicodingEvents.getData().get(i).getImagePath();
-            owner = dicodingEvents.getData().get(i).getOwnerDisplayName();
-            name = dicodingEvents.getData().get(i).getName();
-            id = String.valueOf(dicodingEvents.getData().get(i).getId());
-            link = dicodingEvents.getData().get(i).getLink();
+        for (i = 0; i < listingEvents.getData().size(); i++){
+            image = listingEvents.getData().get(i).getImagePath();
+            owner = listingEvents.getData().get(i).getOwnerDisplayName();
+            name = listingEvents.getData().get(i).getName();
+            id = String.valueOf(listingEvents.getData().get(i).getId());
+            link = listingEvents.getData().get(i).getLink();
 
             column = new CarouselColumn(image, name.substring(0, (name.length() < 40)?name.length():40), owner,
                     Arrays.asList(
