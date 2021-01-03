@@ -37,7 +37,7 @@ public class BotTemplate {
     }
 
     public TemplateMessage greetingMessage(Source source, UserProfileResponse sender) {
-        String message  = "Heyho %s! Selamat datang di Wolfg Project. Silahkan gunakan cari yg anda butuhkan !";
+        String message  = "Heyho %s! Selamat datang di Wolfg Project. Ayoo bergabung dengan temanmu yang lain, pada event yg tersedia disini !";
         String action   = "Cek event";
 
         if (source instanceof GroupSource) {
