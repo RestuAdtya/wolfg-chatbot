@@ -20,10 +20,16 @@ public class Config {
     private Environment mEnv;
 
     @Bean(name="com.linecorp.channel_secret")
-    public String getChannelSecret() { return mEnv.getProperty("com.linecorp.channel_secret"); }
+    public String getChannelSecret()
+    {
+        return mEnv.getProperty("com.linecorp.channel_secret");
+    }
 
     @Bean(name="com.linecorp.channel_access_token")
-    public String getChannelAccessToken() { return mEnv.getProperty("com.linecorp.channel_secret_token"); }
+    public String getChannelAccessToken()
+    {
+        return mEnv.getProperty("com.linecorp.channel_access_token");
+    }
 
     @Bean(name="lineMessagingClient")
     public LineMessagingClient getMessagingClient()
@@ -46,13 +52,13 @@ public class Config {
     @Bean
     DataSource getDataSource()
     {
-        String dbURL=System.getenv("JDBC_DATABASE_URL");
+        String dbUrl=System.getenv("JDBC_DATABASE_URL");
         String username=System.getenv("JDBC_DATABASE_USERNAME");
         String password=System.getenv("JDBC_DATABASE_PASSWORD");
 
-        DriverManagerDataSource ds = new DriverManagerDataSource();
+        DriverManagerDataSource ds=new DriverManagerDataSource();
         ds.setDriverClassName("org.postgresql.Driver");
-        ds.setUrl(dbURL);
+        ds.setUrl(dbUrl);
         ds.setUsername(username);
         ds.setPassword(password);
 
@@ -60,5 +66,8 @@ public class Config {
     }
 
     @Bean
-    public Dao getPersonDao() { return new DaoImpl(getDataSource()); }
+    public Dao getPersonDao()
+    {
+        return new DaoImpl(getDataSource());
+    }
 }

@@ -32,21 +32,22 @@ public class BotTemplate {
                 message,
                 Collections.singletonList(new MessageAction(actionTitle, actionText))
         );
+
         return new TemplateMessage(actionTitle, buttonsTemplate);
     }
 
-    public TemplateMessage greetingMessage(Source source, UserProfileResponse sender){
-        String message = "Hi %s! Ayo ikut dicoding event, aku bisa cariin kamu teman.";
-        String action = "Lihat daftar event";
+    public TemplateMessage greetingMessage(Source source, UserProfileResponse sender) {
+        String message  = "Hi %s! Ayo ikut dicoding event, aku bisa cariin kamu teman.";
+        String action   = "Lihat daftar event";
 
-        if (source instanceof GroupSource){
+        if (source instanceof GroupSource) {
             message = String.format(message, "Group");
-        }else if(source instanceof RoomSource) {
+        } else if (source instanceof RoomSource) {
             message = String.format(message, "Room");
-        }else if(source instanceof UserSource) {
+        } else if(source instanceof UserSource) {
             message = String.format(message, sender.getDisplayName());
-        }else{
-            message = "Unknow Message Souce!";
+        } else {
+            message = "Unknown Message Source!";
         }
 
         return createButton(message, action, action);
@@ -57,7 +58,7 @@ public class BotTemplate {
         String image, owner, name, id, link;
         CarouselColumn column;
         List<CarouselColumn> carouselColumn = new ArrayList<>();
-        for (i = 0; i < dicodingEvents.getData().size(); i++) {
+        for (i = 0; i < dicodingEvents.getData().size(); i++){
             image = dicodingEvents.getData().get(i).getImagePath();
             owner = dicodingEvents.getData().get(i).getOwnerDisplayName();
             name = dicodingEvents.getData().get(i).getName();
@@ -74,6 +75,7 @@ public class BotTemplate {
 
             carouselColumn.add(column);
         }
+
         CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumn);
         return new TemplateMessage("Your search result", carouselTemplate);
     }
