@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chatbotsubmission.iml" filepath="$PROJECT_DIR$/.idea/modules/chatbotsubmission.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chatbotsubmission.main.iml" filepath="$PROJECT_DIR$/.idea/modules/chatbotsubmission.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chatbotsubmission.test.iml" filepath="$PROJECT_DIR$/.idea/modules/chatbotsubmission.test.iml" />
+    </modules>
+  </component>
+</project>
