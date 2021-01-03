@@ -67,8 +67,8 @@ public class BotTemplate {
 
             column = new CarouselColumn(image, name.substring(0, (name.length() < 40)?name.length():40), owner,
                     Arrays.asList(
-                            new MessageAction("Summary", "["+String.valueOf(i+1)+"]"+" Summary : " + name),
-                            new URIAction("View Page", link),
+                            new MessageAction("Deskripsi", "["+String.valueOf(i+1)+"]"+" Deskripsi : " + name),
+                            new URIAction("Selengkapnya", link),
                             new MessageAction("Join Event", "join event #"+id)
                     )
             );
@@ -77,7 +77,7 @@ public class BotTemplate {
         }
 
         CarouselTemplate carouselTemplate = new CarouselTemplate(carouselColumn);
-        return new TemplateMessage("Your search result", carouselTemplate);
+        return new TemplateMessage("Hasil pencarianmu", carouselTemplate);
     }
 
     public String escape(String text) {

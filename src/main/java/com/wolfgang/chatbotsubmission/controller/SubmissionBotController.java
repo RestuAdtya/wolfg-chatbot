@@ -161,7 +161,7 @@ public class SubmissionBotController {
             processText(replyToken, textMessage);
         } else if (msgText.contains("cek event")) {
             showCarouselEvents(replyToken);
-        } else if (msgText.contains("summary")) {
+        } else if (msgText.contains("deskripsi")) {
             showEventSummary(replyToken, textMessage);
         } else {
             handleFallbackMessage(replyToken, new GroupSource(groupId, sender.getUserId()));
