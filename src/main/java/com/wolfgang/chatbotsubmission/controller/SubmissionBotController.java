@@ -453,11 +453,11 @@ public class SubmissionBotController {
                     botTemplate.escape(eventData.getName()),
                     botTemplate.escape(eventData.getSlug()),
                     botTemplate.br2nl(eventData.getReleased()),
-                    eventData.getRating_top(),
+                    eventData.getRating(),
                     eventData.getReviews_text_count(),
                     eventData.getMetacritic(),
                     eventData.getPlaytime(),
-                    eventData.getRating(),
+                    eventData.getRatings_count(),
                     botTemplate.escape("https://rawg.io/games/"+eventData.getSlug()),
                     eventData.getId()
             );

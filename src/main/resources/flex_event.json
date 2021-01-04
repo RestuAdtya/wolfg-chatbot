@@ -50,14 +50,14 @@
         "contents": [
           {
             "type": "text",
-            "text": "Quota",
+            "text": "Rating",
             "size": "sm",
             "color": "#aaaaaa",
             "flex": 1
           },
           {
             "type": "text",
-            "text": "%5$s Seat",
+            "text": "%5$s",
             "size": "sm",
             "color": "#666666",
             "flex": 4
@@ -71,14 +71,14 @@
         "contents": [
           {
             "type": "text",
-            "text": "Begin",
+            "text": "Jml Rating",
             "size": "sm",
             "color": "#aaaaaa",
             "flex": 1
           },
           {
             "type": "text",
-            "text": "%6$s",
+            "text": "%6$s Orang",
             "size": "sm",
             "color": "#666666",
             "flex": 4
@@ -92,7 +92,7 @@
         "contents": [
           {
             "type": "text",
-            "text": "End",
+            "text": "Metacritic",
             "size": "sm",
             "color": "#aaaaaa",
             "flex": 1
@@ -113,7 +113,7 @@
         "contents": [
           {
             "type": "text",
-            "text": "Loc",
+            "text": "Playtime",
             "size": "sm",
             "color": "#aaaaaa",
             "flex": 1
@@ -121,23 +121,6 @@
           {
             "type": "text",
             "text": "%8$s",
-            "size": "sm",
-            "color": "#666666",
-            "wrap": true,
-            "flex": 4
-          }
-        ]
-      },
-      {
-        "type": "box",
-        "layout": "horizontal",
-        "contents": [
-          {
-            "type": "filler"
-          },
-          {
-            "type": "text",
-            "text": "%9$s",
             "size": "sm",
             "color": "#666666",
             "wrap": true,
@@ -159,16 +142,6 @@
           "type": "uri",
           "label": "Lihat",
           "uri": "%10$s"
-        }
-      },
-      {
-        "type": "button",
-        "style": "primary",
-        "action": {
-          "type": "postback",
-          "label": "Join",
-          "data": "join event #%11$s",
-          "text": "join event #%11$s"
         }
       }
     ]
