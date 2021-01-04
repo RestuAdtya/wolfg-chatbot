@@ -209,7 +209,7 @@ public class SubmissionBotController {
                 || msgText.contains("teman")
         ) {
             processText(replyToken, msgText);
-        } else if (msgText.contains("cek event")) {
+        } else if (msgText.contains("cek game")) {
             showCarouselEvents(replyToken);
         } else if (msgText.contains("summary")) {
             showEventSummary(replyToken, textMessage);
