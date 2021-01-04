@@ -194,7 +194,7 @@ public class SubmissionBotController {
             processText(replyToken, msgText);
         } else if (msgText.contains("cek game")) {
             showCarouselEvents(replyToken);
-        } else if (msgText.contains("summary")) {
+        } else if (msgText.contains("deskripsi")) {
             showEventSummary(replyToken, textMessage);
         } else {
             handleFallbackMessage(replyToken, new RoomSource(roomId, sender.getUserId()));
@@ -211,7 +211,7 @@ public class SubmissionBotController {
             processText(replyToken, msgText);
         } else if (msgText.contains("cek game")) {
             showCarouselEvents(replyToken);
-        } else if (msgText.contains("summary")) {
+        } else if (msgText.contains("deskripsi")) {
             showEventSummary(replyToken, textMessage);
         } else {
             handleFallbackMessage(replyToken, new UserSource(sender.getUserId()));

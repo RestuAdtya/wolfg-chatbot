@@ -56,6 +56,7 @@ public class BotTemplate {
 
     public TemplateMessage carouselEvents(ListingGames listingGames) {
         int i;
+        double rating;
         String image, owner, name, id, slug, released_date;
         CarouselColumn column;
         List<CarouselColumn> carouselColumn = new ArrayList<>();
@@ -64,12 +65,13 @@ public class BotTemplate {
             released_date = listingGames.getResults().get(i).getReleased();
             name = listingGames.getResults().get(i).getName();
             slug = listingGames.getResults().get(i).getSlug();
+            rating = listingGames.getResults().get(i).getRating();
 
             id = String.valueOf(listingGames.getResults().get(i).getId());
 
-            column = new CarouselColumn(image, name.substring(0, (name.length() < 40)?name.length():40), slug,
+            column = new CarouselColumn(image, name.substring(0, (name.length() < 40)?name.length():40), "Dirilis : "+released_date+ " ("+rating+")",
                     Arrays.asList(
-                            new MessageAction("Deskripsi", "["+String.valueOf(i+1)+"]"+" Deskripsi : " + name+ "Dirilis : "+released_date),
+                            new MessageAction("Deskripsi", "["+String.valueOf(i+1)+"]"+" Deskripsi : " + name+ " Dirilis : "+released_date+ " Rating("+rating+")"),
                             new URIAction("Selengkapnya", "https://rawg.io/games/"+slug)
                     )
             );
