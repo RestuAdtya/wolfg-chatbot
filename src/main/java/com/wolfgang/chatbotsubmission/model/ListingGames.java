@@ -78,7 +78,7 @@ public class ListingGames {
     }
 
     @JsonProperty("results")
-    public void setResults(List<ModelGames> resulst) {
+    public void setResults(List<ModelGames> results) {
         this.results = results;
     }
 
