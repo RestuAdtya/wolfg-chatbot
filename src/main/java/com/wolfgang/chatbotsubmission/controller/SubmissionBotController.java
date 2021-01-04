@@ -1,5 +1,6 @@
 package com.wolfgang.chatbotsubmission.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linecorp.bot.client.LineSignatureValidator;
 import com.linecorp.bot.model.event.FollowEvent;
@@ -19,10 +20,7 @@ import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.message.flex.container.FlexContainer;
 import com.linecorp.bot.model.objectmapper.ModelObjectMapper;
 import com.linecorp.bot.model.profile.UserProfileResponse;
-import com.wolfgang.chatbotsubmission.model.Datum;
-import com.wolfgang.chatbotsubmission.model.ListingEvents;
-import com.wolfgang.chatbotsubmission.model.JointEvents;
-import com.wolfgang.chatbotsubmission.model.LineEventsModel;
+import com.wolfgang.chatbotsubmission.model.*;
 import com.wolfgang.chatbotsubmission.service.BotService;
 import com.wolfgang.chatbotsubmission.service.BotTemplate;
 import com.wolfgang.chatbotsubmission.service.DBService;
@@ -34,6 +32,7 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -67,6 +66,7 @@ public class SubmissionBotController {
 
     private UserProfileResponse sender = null;
     private ListingEvents listingEvents = null;
+    private ListingGames listingGames = null;
 
     @RequestMapping(value="/webhook", method= RequestMethod.POST)
     public ResponseEntity<String> callback(
@@ -96,6 +96,16 @@ public class SubmissionBotController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping(path = "games", produces = "application/json")
+    public void getGames(@RequestHeader HttpHeaders header) throws JsonProcessingException {
+        try {
+            getListingGamesData();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void greetingMessage(String replyToken, Source source, String additionalMessage) {
         if(sender == null) {
@@ -159,7 +169,7 @@ public class SubmissionBotController {
                 || msgText.contains("teman")
         ) {
             processText(replyToken, textMessage);
-        } else if (msgText.contains("cek event")) {
+        } else if (msgText.contains("cek game")) {
             showCarouselEvents(replyToken);
         } else if (msgText.contains("deskripsi")) {
             showEventSummary(replyToken, textMessage);
@@ -182,7 +192,7 @@ public class SubmissionBotController {
                 || msgText.contains("teman")
         ) {
             processText(replyToken, msgText);
-        } else if (msgText.contains("cek event")) {
+        } else if (msgText.contains("cek game")) {
             showCarouselEvents(replyToken);
         } else if (msgText.contains("summary")) {
             showEventSummary(replyToken, textMessage);
@@ -332,11 +342,12 @@ public class SubmissionBotController {
             userNotFoundFallback(replyToken);
         }
 
-        if((listingEvents == null) || (listingEvents.getData().size() < 1)){
-            getListingEventsData();
+        if((listingGames == null) || (listingGames.getResults().size() < 1)){
+//            getListingEventsData();
+            getListingGamesData();
         }
 
-        TemplateMessage carouselEvents = botTemplate.carouselEvents(listingEvents);
+        TemplateMessage carouselEvents = botTemplate.carouselEvents(listingGames);
 
         if (additionalInfo == null) {
             botService.reply(replyToken, carouselEvents);
@@ -379,6 +390,35 @@ public class SubmissionBotController {
         }
     }
 
+    private void getListingGamesData() {
+        String URI = "https://api.rawg.io/api/games?page=1&page_size=10";
+        System.out.println("URI: " +  URI);
+
+        try (CloseableHttpAsyncClient client = HttpAsyncClients.createDefault()) {
+            client.start();
+            //Use HTTP Get to retrieve data
+            HttpGet get = new HttpGet(URI);
+
+            Future<HttpResponse> future = client.execute(get, null);
+            HttpResponse responseGet = future.get();
+            System.out.println("HTTP executed");
+            System.out.println("HTTP Status of response: " + responseGet.getStatusLine().getStatusCode());
+
+            // Get the response from the GET request
+            InputStream inputStream = responseGet.getEntity().getContent();
+            String encoding = StandardCharsets.UTF_8.name();
+            String jsonResponse = IOUtils.toString(inputStream, encoding);
+
+            System.out.println("Got result");
+            System.out.println(jsonResponse);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            listingGames = objectMapper.readValue(jsonResponse, ListingGames.class);
+        } catch (InterruptedException | ExecutionException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void broadcastNewFriendJoined(String eventId, String newFriendId) {
         List<String> listIds;
         List<JointEvents> jointEvents = dbService.getJoinedEvent(eventId);
@@ -396,28 +436,29 @@ public class SubmissionBotController {
 
     private void showEventSummary(String replyToken, String userTxt) {
         try {
-            if (listingEvents == null) {
-                getListingEventsData();
+            if (listingGames == null) {
+//                getListingEventsData();
+                getListingGamesData();
             }
 
             int eventIndex = Integer.parseInt(String.valueOf(userTxt.charAt(1))) - 1;
-            Datum eventData = listingEvents.getData().get(eventIndex);
+            ModelGames eventData = listingGames.getResults().get(eventIndex);
 
             ClassLoader classLoader = getClass().getClassLoader();
             String encoding         = StandardCharsets.UTF_8.name();
             String flexTemplate     = IOUtils.toString(classLoader.getResourceAsStream("flex_event.json"), encoding);
 
             flexTemplate = String.format(flexTemplate,
-                    botTemplate.escape(eventData.getImagePath()),
+                    botTemplate.escape(eventData.getBackground_image()),
                     botTemplate.escape(eventData.getName()),
-                    botTemplate.escape(eventData.getOwnerName()),
-                    botTemplate.br2nl(eventData.getDescription()),
-                    eventData.getQuota(),
-                    botTemplate.escape(eventData.getBeginTime()),
-                    botTemplate.escape(eventData.getEndTime()),
-                    botTemplate.escape(eventData.getCityName()),
-                    botTemplate.br2nl(eventData.getAddress()),
-                    botTemplate.escape(eventData.getLink()),
+                    botTemplate.escape(eventData.getSlug()),
+                    botTemplate.br2nl(eventData.getReleased()),
+                    eventData.getRating_top(),
+                    eventData.getReviews_text_count(),
+                    eventData.getMetacritic(),
+                    eventData.getPlaytime(),
+                    eventData.getRating(),
+                    botTemplate.escape("https://rawg.io/games/"+eventData.getSlug()),
                     eventData.getId()
             );
 

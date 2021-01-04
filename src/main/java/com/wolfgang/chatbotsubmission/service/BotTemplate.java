@@ -12,6 +12,7 @@ import com.linecorp.bot.model.message.template.CarouselColumn;
 import com.linecorp.bot.model.message.template.CarouselTemplate;
 import com.linecorp.bot.model.profile.UserProfileResponse;
 import com.wolfgang.chatbotsubmission.model.ListingEvents;
+import com.wolfgang.chatbotsubmission.model.ListingGames;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,8 +38,8 @@ public class BotTemplate {
     }
 
     public TemplateMessage greetingMessage(Source source, UserProfileResponse sender) {
-        String message  = "Heyho %s! Selamat datang di Wolfg Project. Ayoo bergabung dengan temanmu yang lain, pada event yg tersedia disini !";
-        String action   = "Cek event";
+        String message  = "Heyho %s! Selamat datang di Wolfg Project. Ini merupakan bot untuk berisikan informasi games terbaru ! Ayoo cek dan dapatkan informasi mengenai game favoritmu";
+        String action   = "Cek game";
 
         if (source instanceof GroupSource) {
             message = String.format(message, "Group");
@@ -53,23 +54,23 @@ public class BotTemplate {
         return createButton(message, action, action);
     }
 
-    public TemplateMessage carouselEvents(ListingEvents listingEvents) {
+    public TemplateMessage carouselEvents(ListingGames listingGames) {
         int i;
-        String image, owner, name, id, link;
+        String image, owner, name, id, slug, released_date;
         CarouselColumn column;
         List<CarouselColumn> carouselColumn = new ArrayList<>();
-        for (i = 0; i < listingEvents.getData().size(); i++){
-            image = listingEvents.getData().get(i).getImagePath();
-            owner = listingEvents.getData().get(i).getOwnerDisplayName();
-            name = listingEvents.getData().get(i).getName();
-            id = String.valueOf(listingEvents.getData().get(i).getId());
-            link = listingEvents.getData().get(i).getLink();
+        for (i = 0; i < listingGames.getResults().size(); i++){
+            image = listingGames.getResults().get(i).getBackground_image();
+            released_date = listingGames.getResults().get(i).getReleased();
+            name = listingGames.getResults().get(i).getName();
+            slug = listingGames.getResults().get(i).getSlug();
 
-            column = new CarouselColumn(image, name.substring(0, (name.length() < 40)?name.length():40), owner,
+            id = String.valueOf(listingGames.getResults().get(i).getId());
+
+            column = new CarouselColumn(image, name.substring(0, (name.length() < 40)?name.length():40), slug,
                     Arrays.asList(
-                            new MessageAction("Deskripsi", "["+String.valueOf(i+1)+"]"+" Deskripsi : " + name),
-                            new URIAction("Selengkapnya", link),
-                            new MessageAction("Join Event", "join event #"+id)
+                            new MessageAction("Deskripsi", "["+String.valueOf(i+1)+"]"+" Deskripsi : " + name+ "Dirilis : "+released_date),
+                            new URIAction("Selengkapnya", "https://rawg.io/games/"+slug)
                     )
             );
 
